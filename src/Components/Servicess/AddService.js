@@ -20,25 +20,19 @@ const AddService = () => {
   const editor = useRef(null);
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
-  const [regularPrice, setRegularPrice] = useState("");
-  const [salePrice, setSalePrice] = useState("");
-  const [discount, setDiscount] = useState("");
   const [time, setTime] = useState("");
   const [parentCategoryId, setParentCategoryId] = useState("");
   const [childCategoryId, setChildCategoryId] = useState("");
-
   const [serviceTypeId, setServiceTypeId] = useState("");
   const [file, setFile] = useState("");
   const [status, setStatus] = useState();
-  const [showLocation, setShowLocation] = useState("");
   const [serviceGroupId, setServiceGroupId] = useState([]);
+  const [showLocation, setShowLocation] = useState("");
 
   const initial_value = () => {
     setDescription("");
     setTitle("");
-    setRegularPrice("");
-    setSalePrice("");
-    setDiscount("");
+
     setTime("");
     setParentCategoryId("");
     setChildCategoryId("");
@@ -46,21 +40,6 @@ const AddService = () => {
     setFile("");
     setServiceGroupId([]);
   };
-
-  const handle_Discount_function = () => {
-    const discountPercentage =
-      ((regularPrice - salePrice) / regularPrice) * 100;
-    setDiscount(discountPercentage.toFixed(2));
-    if (regularPrice === "" || salePrice === "") {
-      setDiscount("");
-    }
-  };
-
-  useEffect(() => {
-    if (regularPrice && salePrice) {
-      handle_Discount_function();
-    }
-  }, [regularPrice, salePrice]);
 
   const postData = async (e) => {
     e.preventDefault();
@@ -74,8 +53,7 @@ const AddService = () => {
     formData.append("categoryId", childCategoryId);
     formData.append("title", title);
     formData.append("description", descriptionString);
-    formData.append("originalPrice", regularPrice);
-    formData.append("discountPrice", discount);
+
     formData.append("serviceTypesId", serviceTypeId);
     formData.append("status", status);
     formData.append("timeInMin", time);
@@ -99,6 +77,7 @@ const AddService = () => {
       );
       const data = response?.data?.data;
       setShowLocation(data?._id);
+      console.log(data?._id, "service id");
       initial_value();
       toast("services is create successful", {
         position: "top-right",
@@ -254,43 +233,6 @@ const AddService = () => {
                     value={title}
                     className="service_input_style"
                     onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
-                <div className="addService2">
-                  <label>Regular Price</label>
-                  <input
-                    type="text"
-                    alt=""
-                    required
-                    placeholder="Regular Price"
-                    value={regularPrice}
-                    className="service_input_style"
-                    onChange={(e) => setRegularPrice(e.target.value)}
-                  />
-                </div>
-                <div className="addService2">
-                  <label>Sale Price</label>
-                  <input
-                    type="text"
-                    alt=""
-                    required
-                    placeholder="Sale Price"
-                    value={salePrice}
-                    className="service_input_style"
-                    onChange={(e) => setSalePrice(e.target.value)}
-                  />
-                </div>
-                <div className="addService2">
-                  <label>Discount (%) </label>
-                  <input
-                    type="text"
-                    alt=""
-                    required
-                    placeholder="Discount"
-                    value={discount}
-                    disabled
-                    className="service_input_style"
-                    onChange={(e) => setDiscount(e.target.value)}
                   />
                 </div>
 

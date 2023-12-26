@@ -7,35 +7,86 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function AddLocation(props) {
-  console.log(props);
-  const [parentcat, setParentcat] = useState();
-  const [image, setImage] = useState();
-  const [notice, setNotice] = useState();
-  const [status, setStatus] = useState("Publish");
-  // const Baseurl =
-  //   "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+  const [serviceId, setServiceId] = useState("");
+  const [cityId, setCityId] = useState("");
+  const [areaId, setAreaId] = useState("");
+  const [regularPrice, setRegularPrice] = useState("");
+  const [salePrice, setSalePrice] = useState("");
+  const [discountActive, setDiscountIsActive] = useState("");
+  const [city, setCity] = useState([]);
+  const [sector, setSector] = useState([]);
+
+  const Baseurl =
+    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+
+  //location
+  // const handle_Discount_function = () => {
+  //   const discountPercentage =
+  //     ((regularPrice - salePrice) / regularPrice) * 100;
+  //   setDiscount(discountPercentage.toFixed(2));
+  //   if (regularPrice === "" || salePrice === "") {
+  //     setDiscount("");
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (regularPrice && salePrice) {
+  //     handle_Discount_function();
+  //   }
+  // }, [regularPrice, salePrice]);
+
+  const getCity = async () => {
+    try {
+      const response = await axios.get(`${Baseurl}api/v1/admin/city/cities`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access"))}`,
+        },
+      });
+      const data = response.data.data;
+
+      setCity(data);
+    } catch {}
+  };
+
+  const getArea = async () => {
+    try {
+      const response = await axios.get(`${Baseurl}api/v1/admin/area/areas`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access"))}`,
+        },
+      });
+      const data = response.data.data;
+
+      setSector(data);
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (props.show === true) {
+      getCity();
+      getArea();
+      setServiceId(props?.showLocation);
+    }
+  }, [props]);
 
   const handlenewcat = async (e) => {
-    console.log("in");
     e.preventDefault();
 
+    const data = {
+      location: [
+        {
+          city: cityId,
+          sector: areaId,
+          originalPrice: regularPrice,
+          discountActive: discountActive,
+          discountPrice: salePrice,
+        },
+      ],
+    };
     try {
-      const formdata = new FormData();
-      formdata.append("name", parentcat);
-      formdata.append("image", image);
-      formdata.append("notice", notice);
-      let val;
-      if (status === "Publish") {
-        val = true;
-      } else {
-        val = false;
-      }
-
-      formdata.append("status", val);
-      console.log(formdata, "from");
-      const response = await axios.post(
-        "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/api/v1/admin/mainCategory/addCategory",
-        formdata,
+      const response = await axios.put(
+        `${Baseurl}api/v1/admin/services/${serviceId}/add-location`,
+        data,
         {
           headers: {
             Authorization: `Bearer ${JSON.parse(
@@ -45,12 +96,11 @@ function AddLocation(props) {
         }
       );
       console.log(response, "success");
-      toast.success("parent category add successful", {
+      toast.success("Add Location Successful", {
         position: toast.POSITION.TOP_CENTER,
       });
       props.getdata();
       props.setShow(false);
-      // props.onHide();
     } catch (e) {
       console.log(e);
     }
@@ -66,49 +116,57 @@ function AddLocation(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Parent Category
+            Add Location
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group className="popUpFrom" style={{ marginTop: "20px" }}>
-              <Form.Label>Parent Category</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Parent Category"
-                value={parentcat}
-                onChange={(e) => setParentcat(e.target.value)}
-              />
+              <Form.Label>City </Form.Label>
+              <Form.Select onChange={(e) => setCityId(e.target.value)}>
+                <option>Open this select menu</option>
+                {city.map((item, i) => (
+                  <option value={item._id}>{item?.name}</option>
+                ))}
+              </Form.Select>
             </Form.Group>
             <Form.Group style={{ marginTop: "20px" }}>
-              <Form.Label>Category Image</Form.Label>
-              <Form.Control
-                type="file"
-                placeholder="Category Image"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
+              <Form.Select onChange={(e) => setAreaId(e.target.value)}>
+                <option>Open this select menu</option>
+                {sector.map((item, i) => (
+                  <option value={item._id}>{item?.name}</option>
+                ))}
+              </Form.Select>
             </Form.Group>
             <Form.Group style={{ marginTop: "20px" }}>
-              <Form.Label>Notice</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Category Notice"
-                value={notice}
-                onChange={(e) => setNotice(e.target.value)}
-              />
+              <Form.Label>Discount Active</Form.Label>
+              <Form.Select
+                onChange={(e) => setDiscountIsActive(e.target.value)}
+              >
+                <option>Open this select menu</option>
+                <option value={true}>True</option>
+                <option value={false}>False</option>
+              </Form.Select>
             </Form.Group>
             <Form.Group
               controlId="exampleForm.ControlSelect1"
               style={{ marginTop: "20px" }}
             >
-              <Form.Label>Status</Form.Label>
+              <Form.Label>Regular Price</Form.Label>
               <Form.Control
-                as="select"
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option>Publish</option>
-                <option>Unpublish</option>
-              </Form.Control>
+                type="number"
+                onChange={(e) => setRegularPrice(e.target.value)}
+              ></Form.Control>
+            </Form.Group>
+            <Form.Group
+              controlId="exampleForm.ControlSelect1"
+              style={{ marginTop: "20px" }}
+            >
+              <Form.Label>Sales Price</Form.Label>
+              <Form.Control
+                type="number"
+                onChange={(e) => setSalePrice(e.target.value)}
+              ></Form.Control>
             </Form.Group>
             <Form.Group style={{ marginTop: "20px", width: "20%" }}>
               <Button
@@ -116,7 +174,7 @@ function AddLocation(props) {
                 type="submit"
                 onClick={(e) => handlenewcat(e)}
               >
-                Save Category
+                Save Location
               </Button>
             </Form.Group>
           </Form>
