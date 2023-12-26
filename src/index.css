@@ -839,6 +839,28 @@ select {
   gap: 20px;
 }
 
+@media screen and (max-width: 768px) {
+  .pc2 {
+    grid-template-columns: 1fr;
+  }
+  .pc3 {
+    grid-template-columns: 1fr;
+  }
+  .addService1 {
+    grid-template-columns: 1fr;
+  }
+
+  .addService2,
+  .addServiceButton,
+  .loc_btn_style {
+    width: 100%;
+  }
+
+  .service_input_style {
+    width: 100%;
+  }
+}
+
 /* ======== create job styling ============*/
 
 .cj1 {

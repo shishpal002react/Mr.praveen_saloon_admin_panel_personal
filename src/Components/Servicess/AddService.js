@@ -33,6 +33,20 @@ const AddService = () => {
   const [showLocation, setShowLocation] = useState("");
   const [serviceGroupId, setServiceGroupId] = useState([]);
 
+  const initial_value = () => {
+    setDescription("");
+    setTitle("");
+    setRegularPrice("");
+    setSalePrice("");
+    setDiscount("");
+    setTime("");
+    setParentCategoryId("");
+    setChildCategoryId("");
+    setServiceTypeId("");
+    setFile("");
+    setServiceGroupId([]);
+  };
+
   const handle_Discount_function = () => {
     const discountPercentage =
       ((regularPrice - salePrice) / regularPrice) * 100;
@@ -41,13 +55,7 @@ const AddService = () => {
       setDiscount("");
     }
   };
-  const customStyles = {
-    control: (provided) => ({
-      ...provided,
-      height: "10px",
-      textAlign: "center",
-    }),
-  };
+
   useEffect(() => {
     if (regularPrice && salePrice) {
       handle_Discount_function();
@@ -57,11 +65,15 @@ const AddService = () => {
   const postData = async (e) => {
     e.preventDefault();
     console.log(serviceGroupId, "print data");
+    const descriptionString = Array.isArray(description)
+      ? description.join("")
+      : description;
+
     const formData = new FormData();
     formData.append("mainCategoryId", parentCategoryId);
     formData.append("categoryId", childCategoryId);
     formData.append("title", title);
-    formData.append("description[0]", description);
+    formData.append("description", descriptionString);
     formData.append("originalPrice", regularPrice);
     formData.append("discountPrice", discount);
     formData.append("serviceTypesId", serviceTypeId);
@@ -87,6 +99,7 @@ const AddService = () => {
       );
       const data = response?.data?.data;
       setShowLocation(data?._id);
+      initial_value();
       toast("services is create successful", {
         position: "top-right",
       });
@@ -117,9 +130,11 @@ const AddService = () => {
       );
       const data = response.data.data;
       setData1(data);
+      setData2([]);
+      setData3([]);
       console.log("parent data", data);
     } catch (error) {
-      console.log(error.message);
+      setData1([]);
     }
   };
 
@@ -141,7 +156,10 @@ const AddService = () => {
       const data = response.data.data;
       console.log(data, "child data");
       setData2(data);
-    } catch {}
+      setData3([]);
+    } catch {
+      setData2([]);
+    }
   };
 
   useEffect(() => {
@@ -165,7 +183,7 @@ const AddService = () => {
       setData3(data);
     } catch {
       setData3([]);
-      console.log(data3);
+
       console.log("Setting");
     }
   };
@@ -192,14 +210,24 @@ const AddService = () => {
     getData4();
   }, []);
 
-  const handleChange = (selectedOption) => {
-    if (selectedOption) {
-      setServiceGroupId((prevIds) => [...prevIds, selectedOption._id]);
-    } else {
-      setServiceGroupId((prevIds) =>
-        prevIds.filter((id) => id !== selectedOption._id)
-      );
+  const handleChange = (selectedOptions) => {
+    console.log(selectedOptions, "value of e");
+    if (selectedOptions) {
+      setServiceGroupId((prevIds) => [...prevIds, selectedOptions?.[0]?.value]);
     }
+    console.log(serviceGroupId, "service group id");
+  };
+
+  const handleRemove = (removedOption) => {
+    const removedId = removedOption.value;
+    setServiceGroupId((prevIds) => prevIds.filter((id) => id !== removedId));
+  };
+
+  const customStyles = {
+    control: (provided) => ({
+      ...provided,
+      height: "10px",
+    }),
   };
 
   return (
@@ -286,9 +314,9 @@ const AddService = () => {
                     onChange={(e) => setParentCategoryId(e.target.value)}
                   >
                     <option>Select Parent Category</option>
-                    {data1.length > 0 &&
+                    {data1?.length > 0 &&
                       data1 &&
-                      data1.map((item) => (
+                      data1?.map((item) => (
                         <option value={item._id}>{item.name}</option>
                       ))}
                   </select>
@@ -300,25 +328,30 @@ const AddService = () => {
                     onChange={(e) => setChildCategoryId(e.target.value)}
                   >
                     <option>Select Child Category</option>
-                    {data2.length > 0 &&
+                    {data2?.length > 0 &&
                       data2 &&
-                      data2.map((item) => (
+                      data2?.map((item) => (
                         <option value={item._id}>{item.name}</option>
                       ))}
                   </select>
                 </div>
                 <div className="addService2" style={{ height: "10px" }}>
                   <label>Service Group</label>
-                  <div>
+                  <div style={{ height: "10px" }}>
                     <Select
                       styles={customStyles}
-                      options={data3?.map((option) => ({
-                        value: option._id,
-                        label: option.name,
-                      }))}
+                      options={
+                        Array.isArray(data3) && data3.length > 0
+                          ? data3.map((option) => ({
+                              value: option._id,
+                              label: option.name,
+                            }))
+                          : []
+                      }
                       placeholder="Select an option"
                       isMulti
                       onChange={handleChange}
+                      onRemove={handleRemove}
                     />
                   </div>
                 </div>
