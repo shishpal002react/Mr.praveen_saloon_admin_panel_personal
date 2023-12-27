@@ -816,30 +816,70 @@ select {
 
 .addServiceButton {
   border: none;
-  width: 10%;
+  width: 10rem;
   background: #006eb6;
   border-radius: 4px;
   color: #fff;
   height: 40px;
   margin: 20px;
-  /* margin-top: 20px;
-  margin-bottom: 20px; */
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-.loc_btn_style {
-  width: 10%;
-  background: #006eb6;
-  border-radius: 4px;
-  color: #fff;
-  padding: 10px;
-  cursor: pointer;
-}
+
 .addSlot1 {
   display: grid;
   grid-template-columns: auto auto auto;
   gap: 20px;
 }
 
+.service_button {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ser-Loc_table {
+  margin: auto;
+  margin-top: 20px;
+
+  width: 96%;
+  margin-bottom: 25%;
+  border: 1px solid rgb(195, 188, 188);
+}
+.ser-Loc_table table {
+  width: 95%;
+  margin: auto;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+.ser-Loc_table table th {
+  text-align: left;
+  align-items: left;
+  margin-left: 20px;
+}
+.ser-Loc_table table tbody tr {
+  margin-top: 20px;
+}
+.ser-Loc_table table tbody td {
+  text-align: left;
+  margin-left: 20px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #363642;
+  margin-top: 20px;
+}
+
 @media screen and (max-width: 768px) {
+  #service_button {
+    width: 8rem;
+  }
+  .ser-Loc_table {
+    overflow-x: scroll;
+  }
+
+  .responsive_service_data {
+    margin-top: 50px;
+  }
   .pc2 {
     grid-template-columns: 1fr;
   }
@@ -849,11 +889,17 @@ select {
   .addService1 {
     grid-template-columns: 1fr;
   }
+  .service_button {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
 
-  .addService2,
-  .addServiceButton,
-  .loc_btn_style {
+  .addService2 {
     width: 100%;
+  }
+  .addServiceButton {
+    width: 70%;
   }
 
   .service_input_style {

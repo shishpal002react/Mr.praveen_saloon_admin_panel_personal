@@ -14,7 +14,7 @@ function AddServiceGroup(props) {
 
   const [color, setColor] = useState("");
   const [image, setImage] = useState("");
-  const [parentCategoryId, setParentCategoryId] = useState();
+  const [parentCategoryId, setParentCategoryId] = useState("");
   const [childCategory, setChildCategory] = useState();
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
@@ -22,6 +22,8 @@ function AddServiceGroup(props) {
   //text driver
   const editor = useRef(null);
   const [description, setDescription] = useState("");
+
+  console.log(parentCategoryId, "parent category id");
 
   //parent category
   const Baseurl =
@@ -112,7 +114,9 @@ function AddServiceGroup(props) {
       // props.setShow(false);
       // props.onHide();
     } catch (e) {
-      console.log(e);
+      toast.success(e?.response?.data?.message, {
+        position: toast.POSITION.TOP_CENTER,
+      });
     }
   };
   return (
@@ -137,9 +141,10 @@ function AddServiceGroup(props) {
                   as="select"
                   onChange={(e) => setParentCategoryId(e.target.value)}
                 >
+                  <option>Select Parent Category</option>
                   {data1 &&
                     data1.map((item) => (
-                      <option value={item._id}>{item.name}</option>
+                      <option value={item?._id}>{item.name}</option>
                     ))}
                 </Form.Control>
                 <Form.Group className="popUpFrom" style={{ marginTop: "20px" }}>

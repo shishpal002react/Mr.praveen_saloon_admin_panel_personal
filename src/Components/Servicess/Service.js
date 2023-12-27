@@ -143,8 +143,8 @@ const Service = () => {
                   <th className="th3">Title</th>
                   <th className="th3">P. Category</th>
                   <th className="th3">C. Category</th>
-                  <th className="th4">Price</th>
-                  <th className="th4">Discount</th>
+                  {/* <th className="th4">Price</th>
+                  <th className="th4">Discount</th> */}
                   <th className="th4">Time</th>
                   <th className="th4">Rating</th>
                   <th className="th6">Status</th>
@@ -173,13 +173,13 @@ const Service = () => {
                       <td>
                         <h6>{item.categoryId.name}</h6>
                       </td>
-                      <td>
+                      {/* <td>
                         {" "}
                         <h6>{item.originalPrice}</h6>
                       </td>
                       <td>
                         <h6> {item.discount}</h6>
-                      </td>
+                      </td> */}
                       <td>
                         <h6>{item.timeInMin}</h6>
                       </td>

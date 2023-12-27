@@ -6,8 +6,9 @@ import FormData from "form-data";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function AddLocation(props) {
+function EditLocation(props) {
   const [serviceId, setServiceId] = useState("");
+  const [locationId, setLocationId] = useState("");
   const [cityId, setCityId] = useState("");
   const [areaId, setAreaId] = useState("");
   const [regularPrice, setRegularPrice] = useState("");
@@ -66,26 +67,30 @@ function AddLocation(props) {
       getCity();
       getArea();
       setServiceId(props?.showLocation);
+      setLocationId(props?.locationId);
+      setRegularPrice(props?.originalLocation);
+      setSalePrice(props?.discountLocation);
+      setAreaId(props?.areaId);
+      setCityId(props?.cityId);
+      setDiscountIsActive(props?.discountActive);
     }
   }, [props]);
+  console.log(regularPrice, "regular pricr in edit location");
+  console.log(salePrice, "sales pricr in edit location");
 
   const handlenewcat = async (e) => {
     e.preventDefault();
 
     const data = {
-      location: [
-        {
-          city: cityId,
-          sector: areaId,
-          originalPrice: regularPrice,
-          discountActive: discountActive,
-          discountPrice: salePrice,
-        },
-      ],
+      city: cityId,
+      sector: areaId,
+      originalPrice: regularPrice,
+      discountActive: discountActive,
+      discountPrice: salePrice,
     };
     try {
       const response = await axios.put(
-        `${Baseurl}api/v1/admin/services/${serviceId}/add-location`,
+        `${Baseurl}api/v1/admin/services/${serviceId}/update-location/${locationId}`,
         data,
         {
           headers: {
@@ -100,6 +105,7 @@ function AddLocation(props) {
         position: toast.POSITION.TOP_CENTER,
       });
       props.addLocation(response?.data?.data?.location);
+      props.getService();
       props.setShow(false);
     } catch (e) {
       toast.success(e?.response?.data?.message, {
@@ -157,6 +163,7 @@ function AddLocation(props) {
               <Form.Label>Regular Price</Form.Label>
               <Form.Control
                 type="number"
+                value={regularPrice}
                 onChange={(e) => setRegularPrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -167,6 +174,7 @@ function AddLocation(props) {
               <Form.Label>Sales Price</Form.Label>
               <Form.Control
                 type="number"
+                value={salePrice}
                 onChange={(e) => setSalePrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -187,4 +195,4 @@ function AddLocation(props) {
   );
 }
 
-export default AddLocation;
+export default EditLocation;
