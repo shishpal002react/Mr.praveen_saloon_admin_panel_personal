@@ -119,6 +119,7 @@ const AddService = () => {
       setData2([]);
       setData3([]);
       setData4([]);
+      setServiceGroupId([]);
       console.log("parent data", data);
     } catch (error) {
       setData1([]);
@@ -145,6 +146,7 @@ const AddService = () => {
       setData2(data);
       setData3([]);
       setData4([]);
+      setServiceGroupId([]);
     } catch {
       setData2([]);
     }
@@ -170,6 +172,7 @@ const AddService = () => {
       console.log(data, "service group data");
       setData3(data);
       setData4([]);
+      setServiceGroupId([]);
     } catch {
       setData3([]);
 

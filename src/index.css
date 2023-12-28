@@ -471,6 +471,7 @@ hr {
   display: flex;
   align-items: center;
 }
+
 .pc6 {
   display: flex;
   gap: 10px;
@@ -491,12 +492,19 @@ hr {
   margin-left: 2%;
   width: 96%;
 }
+
 .pc7 table {
   width: 100%;
 }
 .pc7 table th {
   text-align: left;
   align-items: left;
+}
+.pc7 table thead,
+tbody {
+  text-align: left;
+  align-items: left;
+  justify-content: space-between;
 }
 
 .pc7 table tbody td {
@@ -517,6 +525,12 @@ hr {
 .odd h6 {
   font-size: 14px;
   font-weight: 700;
+  color: #686464;
+}
+
+.odd h5 {
+  font-size: 15px;
+  font-weight: 500;
   color: #686464;
 }
 
@@ -621,8 +635,8 @@ hr {
   margin-left: 20px;
 }
 .childImg {
-  width: 50px;
-  height: 50px;
+  width: 75px;
+  height: 75px;
 }
 .childImg2 {
   width: 150px;
@@ -753,12 +767,15 @@ hr {
 }
 .package2 {
   display: flex;
-  justify-content: space-between;
+  /* justify-content: space-around; */
   align-items: center;
+  padding: 15px;
   padding-top: 10px;
   margin-left: 5%;
-  width: 90%;
+  /* width: 100%; */
   gap: 20px;
+  height: 4rem;
+  width: 15rem;
 }
 
 .packImg {

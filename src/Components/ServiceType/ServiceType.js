@@ -5,6 +5,63 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import EditServiceType from "./EditServiceType";
 import { toast } from "react-toastify";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+
+//service type
+function MyVerticallyCenteredModal(props) {
+  const [deleteId, setDeleteId] = useState("");
+
+  const Baseurl =
+    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+
+  useEffect(() => {
+    if (props.show === true) {
+      setDeleteId(props.deleteDataId);
+    }
+  }, [props]);
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${Baseurl}api/v1/admin/serviceTypes/${deleteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("access")
+            )}`,
+          },
+        }
+      );
+      toast.success("Delete services type successful", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      props.getdata();
+      props.onHide();
+    } catch {}
+  };
+  return (
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Service Group
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Confirm Deleting the Service Group</h4>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+        <Button onClick={handleDelete}>Delete</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 
 const ServiceType = () => {
   const [show, setShow] = useState(false);
@@ -19,6 +76,10 @@ const ServiceType = () => {
   const [id, setId] = useState();
   const [mainCategoryId, setMainCategoryId] = useState("");
   const [commingSoon, setCommingSoon] = useState();
+
+  //delete data model
+  const [deleteDataModel, setDeleteDataModel] = useState(false);
+  const [deleteDataId, setDeleteDataId] = useState("");
 
   //api call
   const Baseurl =
@@ -42,26 +103,6 @@ const ServiceType = () => {
   useEffect(() => {
     getdata();
   }, []);
-
-  //delete api
-  const handleDelete = async (id) => {
-    try {
-      const response = await axios.delete(
-        `${Baseurl}/api/v1/admin/serviceTypes/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              localStorage.getItem("access")
-            )}`,
-          },
-        }
-      );
-      toast.success("service type is delete successful", {
-        position: "top-center",
-      });
-      getdata();
-    } catch {}
-  };
 
   //handle edit id
   const handleEdit = (item) => {
@@ -217,7 +258,10 @@ const ServiceType = () => {
                         <button className="deleteBtn">
                           <i
                             class="fa-solid fa-trash"
-                            onClick={() => handleDelete(item._id)}
+                            onClick={() => {
+                              setDeleteDataModel(true);
+                              setDeleteDataId(item._id);
+                            }}
                           ></i>
                         </button>
                       </td>
@@ -247,6 +291,12 @@ const ServiceType = () => {
           </div>
         </div>
       </div>
+      <MyVerticallyCenteredModal
+        show={deleteDataModel}
+        onHide={() => setDeleteDataModel(false)}
+        deleteDataId={deleteDataId}
+        getdata={getdata}
+      />
     </>
   );
 };

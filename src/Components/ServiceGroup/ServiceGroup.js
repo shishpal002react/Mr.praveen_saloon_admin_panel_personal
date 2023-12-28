@@ -8,6 +8,61 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 
+//service delete model
+function MyVerticallyCenteredModal(props) {
+  const [deleteId, setDeleteId] = useState("");
+
+  const Baseurl =
+    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+
+  useEffect(() => {
+    if (props.show === true) {
+      setDeleteId(props.deleteDataId);
+    }
+  }, [props]);
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${Baseurl}api/v1/admin/SubCategory/delete/${deleteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("access")
+            )}`,
+          },
+        }
+      );
+      toast.success("Delete Group services successful", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      props.getdata();
+      props.onHide();
+    } catch {}
+  };
+  return (
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Service Group
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Confirm Deleting the Service Group</h4>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+        <Button onClick={handleDelete}>Delete</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
 const ServiceGroup = () => {
   // hijif jfih
   const [show, setShow] = useState(false);
@@ -15,6 +70,10 @@ const ServiceGroup = () => {
   const [product, setProduct] = useState([]);
   const [query, setQuery] = useState("");
   const [productSize, setProductSize] = useState();
+
+  //delete data model
+  const [deleteDataModel, setDeleteDataModel] = useState(false);
+  const [deleteDataId, setDeleteDataId] = useState("");
 
   //edit api
   const [name, setName] = useState("");
@@ -48,27 +107,6 @@ const ServiceGroup = () => {
   useEffect(() => {
     getdata();
   }, []);
-
-  //delete api
-  const handleDelete = async (id) => {
-    console.log("delete data", id);
-    try {
-      const response = await axios.delete(
-        `${Baseurl}api/v1/admin/SubCategory/delete/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              localStorage.getItem("access")
-            )}`,
-          },
-        }
-      );
-      toast.success("Delete Group services successful", {
-        position: toast.POSITION.TOP_CENTER,
-      });
-      getdata();
-    } catch {}
-  };
 
   //handle edit id
   const handleEdit = (item) => {
@@ -252,7 +290,11 @@ const ServiceGroup = () => {
                         <button className="deleteBtn">
                           <i
                             class="fa-solid fa-trash"
-                            onClick={() => handleDelete(item._id)}
+                            onClick={() => {
+                              setDeleteDataModel(true);
+                              setDeleteDataId(item._id);
+                            }}
+                            // onClick={() => handleDelete(item._id)}
                           ></i>
                         </button>
                       </td>
@@ -313,6 +355,12 @@ const ServiceGroup = () => {
           </div>
         </div>
       </div>
+      <MyVerticallyCenteredModal
+        show={deleteDataModel}
+        onHide={() => setDeleteDataModel(false)}
+        deleteDataId={deleteDataId}
+        getdata={getdata}
+      />
     </>
   );
 };

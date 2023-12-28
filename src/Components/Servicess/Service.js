@@ -2,13 +2,74 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { toast } from "react-toastify";
+
+//service type
+function MyVerticallyCenteredModal(props) {
+  const [deleteId, setDeleteId] = useState("");
+
+  const Baseurl =
+    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+
+  useEffect(() => {
+    if (props.show === true) {
+      setDeleteId(props.deleteDataId);
+    }
+  }, [props]);
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `${Baseurl}api/v1/admin/Service/delete/${deleteId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("access")
+            )}`,
+          },
+        }
+      );
+      toast.success("Delete services successful", {
+        position: toast.POSITION.TOP_CENTER,
+      });
+      props.getdata();
+      props.onHide();
+    } catch {}
+  };
+  return (
+    <Modal
+      {...props}
+      size="md"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Service Group
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <h4>Confirm Deleting the Service Group</h4>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={props.onHide}>Close</Button>
+        <Button onClick={handleDelete}>Delete</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
 
 const Service = () => {
-  //gufi jh
   const navigate = useNavigate();
   const [product, setProduct] = useState([]);
   const [query, setQuery] = useState("");
   const [productSize, setProductSize] = useState();
+
+  //delete data model
+  const [deleteDataModel, setDeleteDataModel] = useState(false);
+  const [deleteDataId, setDeleteDataId] = useState("");
 
   const getdata = async () => {
     try {
@@ -31,26 +92,6 @@ const Service = () => {
   useEffect(() => {
     getdata();
   }, []);
-
-  const handledelete = async (item) => {
-    console.log(item._id);
-    try {
-      const response = await axios.delete(
-        `https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/api/v1/admin/Service/delete/${item._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(
-              localStorage.getItem("access")
-            )}`,
-          },
-        }
-      );
-      // const data = response.data.data;
-      // console.log(data,"servid");
-      // setData(data);
-      getdata();
-    } catch {}
-  };
 
   // Pagination
   const [currentPage2, setCurrentPage2] = useState(1);
@@ -211,7 +252,10 @@ const Service = () => {
                         <button className="deleteBtn2">
                           <i
                             class="fa-solid fa-trash"
-                            onClick={() => handledelete(item)}
+                            onClick={() => {
+                              setDeleteDataModel(true);
+                              setDeleteDataId(item._id);
+                            }}
                           ></i>
                         </button>
                       </td>
@@ -241,6 +285,12 @@ const Service = () => {
           </div>
         </div>
       </div>
+      <MyVerticallyCenteredModal
+        show={deleteDataModel}
+        onHide={() => setDeleteDataModel(false)}
+        deleteDataId={deleteDataId}
+        getdata={getdata}
+      />
     </>
   );
 };

@@ -51,6 +51,7 @@ const AddService = () => {
       setService(data);
       setTitle(data?.title);
       setTime(data?.timeInMin);
+      setStatus(data?.status);
       if (Array.isArray(data?.location)) {
         setLocationData(data?.location);
       } else {
@@ -103,7 +104,7 @@ const AddService = () => {
     Array.from(file).forEach((img) => {
       formData.append("image", img);
     });
-
+    //edit services
     try {
       const response = await axios.put(
         `${Baseurl}api/v1/admin/Service/addService`,
@@ -294,7 +295,6 @@ const AddService = () => {
                   <input
                     type="text"
                     alt=""
-                    required
                     placeholder="Service Title"
                     value={title}
                     className="service_input_style"
@@ -307,7 +307,6 @@ const AddService = () => {
                   <input
                     type="text"
                     alt=""
-                    required
                     placeholder="Service Timing"
                     value={time}
                     className="service_input_style"
@@ -317,7 +316,6 @@ const AddService = () => {
                 <div className="addService2">
                   <label>Parent Category</label>
                   <select
-                    required
                     className="service_input_style"
                     onChange={(e) => setParentCategoryId(e.target.value)}
                   >
@@ -333,7 +331,6 @@ const AddService = () => {
                   <label>Child Category</label>
                   <select
                     className="service_input_style"
-                    required
                     onChange={(e) => setChildCategoryId(e.target.value)}
                   >
                     <option>Select Child Category</option>
@@ -358,7 +355,6 @@ const AddService = () => {
                     }
                     placeholder="Select option"
                     isMulti
-                    required
                     onChange={handleChange}
                     onRemove={handleRemove}
                   />
@@ -367,7 +363,6 @@ const AddService = () => {
                   <label>Service Type</label>
                   <select
                     className="service_input_style"
-                    required
                     onChange={(e) => setServiceTypeId(e.target.value)}
                   >
                     <option>Select Service Type</option>
@@ -382,7 +377,6 @@ const AddService = () => {
                   <Form.Group className="mb-3">
                     <Form.Label>Service Image</Form.Label>
                     <Form.Control
-                      required
                       onChange={(e) => setFile(e.target.files)}
                       type="file"
                       size="sm"
@@ -392,15 +386,18 @@ const AddService = () => {
                 </div>
                 <div className="addService2">
                   <label>Status</label>
-                  <select
-                    className="service_input_style"
-                    required
+                  <Form.Control
+                    as="select"
+                    defaultValue={status ? "Publish" : "Unpublish"}
                     onChange={(e) => setStatus(e.target.value)}
                   >
-                    <option>Select Status</option>
-                    <option value={true}>Publish</option>
-                    <option value={false}>Unpublish</option>
-                  </select>
+                    <option value={status ? true : false}>
+                      {status ? "Publish" : "Unpublish"}
+                    </option>
+                    <option value={status ? false : true}>
+                      {status ? "Unpublish" : "Publish"}
+                    </option>
+                  </Form.Control>
                 </div>
               </div>
               <Form.Group style={{ marginTop: "20px" }}>
@@ -408,7 +405,6 @@ const AddService = () => {
                 <JoditEditor
                   ref={editor}
                   value={description}
-                  required
                   tabIndex={1} // tabIndex of textarea
                   onBlur={(newContent) => setDescription(newContent)} // preferred to use only this option to update the content for performance reasons
                   onChange={(newContent) => setDescription(newContent)}
