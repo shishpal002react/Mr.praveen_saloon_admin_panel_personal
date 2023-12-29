@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { Form, Button } from "react-bootstrap";
 import axios from "axios";
@@ -16,24 +16,12 @@ function AddLocation(props) {
   const [city, setCity] = useState([]);
   const [sector, setSector] = useState([]);
 
+  //addLocation id
+  const [addServiceByLocation, setAddServiceByLocation] = useState([]);
+  const [locationArray, setLocationArray] = useState([]);
+
   const Baseurl =
     "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
-
-  //location
-  // const handle_Discount_function = () => {
-  //   const discountPercentage =
-  //     ((regularPrice - salePrice) / regularPrice) * 100;
-  //   setDiscount(discountPercentage.toFixed(2));
-  //   if (regularPrice === "" || salePrice === "") {
-  //     setDiscount("");
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (regularPrice && salePrice) {
-  //     handle_Discount_function();
-  //   }
-  // }, [regularPrice, salePrice]);
 
   const getCity = async () => {
     try {
@@ -61,13 +49,65 @@ function AddLocation(props) {
     } catch {}
   };
 
+  const getServices = async (id) => {
+    try {
+      const response = await axios.get(`${Baseurl}api/v1/admin/Service/${id}`, {
+        headers: {
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access"))}`,
+        },
+      });
+      const data = response?.data?.data;
+      setLocationArray((prev) => [...prev, data]);
+    } catch (error) {}
+  };
+
   useEffect(() => {
     if (props.show === true) {
       getCity();
       getArea();
       setServiceId(props?.showLocation);
+      setAddServiceByLocation(props?.addServiceByLocation);
+      for (let i = 0; i < addServiceByLocation.length; i++) {
+        getServices(addServiceByLocation[i]);
+      }
+    }
+  }, [props, addServiceByLocation]);
+
+  useEffect(() => {
+    if (props.show !== true) {
+      setLocationArray([]);
+      setRegularPrice("");
+      setSalePrice("");
+      setCityId("");
+      setAreaId("");
     }
   }, [props]);
+
+  console.log("regularPrice ", regularPrice);
+  console.log("cityId ", cityId);
+
+  const settingFunc = useCallback(() => {
+    if (cityId && areaId) {
+      if (locationArray?.length > 0) {
+        locationArray.forEach((item) => {
+          item.location.forEach((i) => {
+            if (i?.city?._id === cityId && i?.sector?._id === areaId) {
+              setRegularPrice(i.originalPrice);
+              setSalePrice(i.discountPrice);
+            }
+          });
+        });
+      }
+    }
+  }, [cityId, areaId, locationArray]);
+
+  useEffect(() => {
+    if (props.show) {
+      settingFunc();
+    }
+  }, [settingFunc, props]);
+
+  console.log(locationArray);
 
   const handlenewcat = async (e) => {
     e.preventDefault();
@@ -157,6 +197,7 @@ function AddLocation(props) {
               <Form.Label>Regular Price</Form.Label>
               <Form.Control
                 type="number"
+                value={regularPrice}
                 onChange={(e) => setRegularPrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -167,6 +208,7 @@ function AddLocation(props) {
               <Form.Label>Sales Price</Form.Label>
               <Form.Control
                 type="number"
+                value={salePrice}
                 onChange={(e) => setSalePrice(e.target.value)}
               ></Form.Control>
             </Form.Group>

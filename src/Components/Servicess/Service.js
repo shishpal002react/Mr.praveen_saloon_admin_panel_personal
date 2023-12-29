@@ -187,7 +187,7 @@ const Service = () => {
                   {/* <th className="th4">Price</th>
                   <th className="th4">Discount</th> */}
                   <th className="th4">Time</th>
-                  <th className="th4">Rating</th>
+                  {/* <th className="th4">Rating</th> */}
                   <th className="th6">Status</th>
                   <th className="th7">Action</th>
                 </tr>
@@ -224,9 +224,9 @@ const Service = () => {
                       <td>
                         <h6>{item.timeInMin}</h6>
                       </td>
-                      <td>
+                      {/* <td>
                         <h6>{item.rating}</h6>
-                      </td>
+                      </td> */}
                       <td>
                         <span className="badge ">
                           {item.status ? (

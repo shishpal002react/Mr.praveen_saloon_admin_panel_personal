@@ -47,11 +47,11 @@ function MyVerticallyCenteredModal(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          Service Group
+          Package Delete Successful
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h4>Confirm Deleting the Service Group</h4>
+        <h6>Confirm Deleting the Service Group</h6>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>

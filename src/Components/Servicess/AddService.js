@@ -35,8 +35,6 @@ const AddService = () => {
     setLocationData(data);
   }
 
-  console.log(locationData, "location data is update");
-
   const initial_value = () => {
     setDescription("");
     setTitle("");
@@ -48,9 +46,19 @@ const AddService = () => {
     setServiceGroupId([]);
   };
 
+  const handleChange = (selectedOptions) => {
+    setServiceGroupId(selectedOptions);
+  };
+
   const postData = async (e) => {
     e.preventDefault();
-    console.log(serviceGroupId, "print data");
+
+    const arr = [];
+
+    for (let i = 0; i < serviceGroupId.length; i++) {
+      arr.push(serviceGroupId[i].value);
+    }
+
     const descriptionString = Array.isArray(description)
       ? description.join("")
       : description;
@@ -65,9 +73,10 @@ const AddService = () => {
     formData.append("status", status);
     formData.append("timeInMin", time);
 
-    serviceGroupId.forEach((item, i) => {
-      formData.append(`subCategoryId[${i}]`, item);
+    arr.forEach((item) => {
+      formData.append(`subCategoryId`, item);
     });
+
     Array.from(file).forEach((img) => {
       formData.append("image", img);
     });
@@ -84,7 +93,7 @@ const AddService = () => {
       );
       const data = response?.data?.data;
       setShowLocation(data?._id);
-      console.log(data?._id, "service id");
+
       initial_value();
       toast("services is create successful", {
         position: "top-right",
@@ -118,9 +127,8 @@ const AddService = () => {
       setData1(data);
       setData2([]);
       setData3([]);
-      setData4([]);
+      // setData4([]);
       setServiceGroupId([]);
-      console.log("parent data", data);
     } catch (error) {
       setData1([]);
     }
@@ -142,10 +150,9 @@ const AddService = () => {
         }
       );
       const data = response.data.data;
-      console.log(data, "child data");
       setData2(data);
       setData3([]);
-      setData4([]);
+      // setData4([]);
       setServiceGroupId([]);
     } catch {
       setData2([]);
@@ -169,14 +176,12 @@ const AddService = () => {
         }
       );
       const data = response.data.data;
-      console.log(data, "service group data");
+
       setData3(data);
-      setData4([]);
+      // setData4([]);
       setServiceGroupId([]);
     } catch {
       setData3([]);
-
-      console.log("Setting");
     }
   };
 
@@ -193,7 +198,7 @@ const AddService = () => {
         },
       });
       const data = response.data.data;
-      console.log(data, "service type");
+
       setData4(data);
     } catch {}
   };
@@ -201,21 +206,6 @@ const AddService = () => {
   useEffect(() => {
     getData4();
   }, []);
-
-  const handleChange = (selectedOptions) => {
-    console.log(selectedOptions, "value of e");
-    if (selectedOptions) {
-      setServiceGroupId((prevIds) => [...prevIds, selectedOptions?.[0]?.value]);
-    }
-    console.log(serviceGroupId, "service group id");
-  };
-
-  const handleRemove = (removedOption) => {
-    console.log(removedOption, "value of e remove");
-    const removedId = removedOption?.value;
-    setServiceGroupId((prevIds) => prevIds.filter((id) => id !== removedId));
-    console.log(serviceGroupId, "service group id remove");
-  };
 
   const customStyles = {
     control: (provided) => ({
@@ -322,7 +312,6 @@ const AddService = () => {
                     isMulti
                     required
                     onChange={handleChange}
-                    onRemove={handleRemove}
                   />
                 </div>
                 <div className="addService2 responsive_service_data">
