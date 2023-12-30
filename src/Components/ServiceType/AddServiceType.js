@@ -66,7 +66,7 @@ function AddServiceType(props) {
         }
       );
       console.log(response, "success");
-      toast.success("parent category add successful", {
+      toast.success("service type add successful", {
         position: "top-center",
       });
       props.onHide();

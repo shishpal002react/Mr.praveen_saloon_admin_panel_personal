@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "../Navbar/Navbar";
 import { useNavigate, useParams } from "react-router-dom";
-import ParentCategory from "./../ParentCategory/ParentCategory";
-import ChildCategory from "./../ChildCategory/ChildCategory";
 import axios from "axios";
 import { Form } from "react-bootstrap";
 import { toast } from "react-toastify";
@@ -12,13 +10,14 @@ import { useRef } from "react";
 import Select from "react-select";
 import EditLocation from "./EditLocation";
 
-const AddService = () => {
+const EditPackages = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   //location model
   const [show, setShow] = useState(false);
   //text driver
   const editor = useRef(null);
+
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
@@ -26,21 +25,53 @@ const AddService = () => {
   const [childCategoryId, setChildCategoryId] = useState("");
   const [serviceTypeId, setServiceTypeId] = useState("");
   const [file, setFile] = useState("");
-  const [status, setStatus] = useState();
+  const [status, setStatus] = useState("");
   const [serviceGroupId, setServiceGroupId] = useState([]);
+  const [serviceSingleGroupId, setServiceSingleGroupId] = useState([]);
   const [showLocation, setShowLocation] = useState("");
   const [locationData, setLocationData] = useState([]);
-  const [locationId, setLocationId] = useState("");
-  const [subCategoryIdArray, setSubCategoryIdArray] = useState([]);
+  const [serviceId, setServiceId] = useState([]);
+  const [addOnServicesId, setAddOnServicesId] = useState([]);
+  const [packageDataArray, setPackageDataArray] = useState({});
 
+  //addLocation id
+  const [addServiceByLocation, setAddServiceByLocation] = useState([]);
+  const [showLocationArray, setShowLocationArray] = useState([]);
+  const [serviceSingleGroupArray, setServiceSingleGroupArray] = useState([]);
   //location state
+  const [locationId, setLocationId] = useState("");
   const [originalLocation, setOriginalLocation] = useState("");
   const [discountLocation, setDiscountLocation] = useState("");
   const [discountActive, setDiscountActive] = useState("");
   const [cityId, setCityId] = useState("");
   const [areaId, setAreaId] = useState("");
 
-  //update location data
+  const Baseurl =
+    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
+
+  useEffect(() => {
+    setStatus(packageDataArray?.status);
+    setServiceSingleGroupArray(packageDataArray?.subCategoryId);
+    setTitle(packageDataArray?.title);
+    setTime(packageDataArray?.timeInMin);
+    setParentCategoryId(packageDataArray?.mainCategoryId?._id);
+    setChildCategoryId(packageDataArray?.categoryId?._id);
+  }, [packageDataArray]);
+
+  useEffect(() => {
+    serviceSingleGroupArray?.map((item) => {
+      console.log(item, "value");
+      return setServiceGroupId((prev) => [
+        ...prev,
+        {
+          value: item?._id,
+          label: item?.name,
+        },
+      ]);
+    });
+  }, [serviceSingleGroupArray]);
+
+  //update location data setServiceGroupId
   function addLocation(data) {
     setLocationData(data);
   }
@@ -53,15 +84,27 @@ const AddService = () => {
     setChildCategoryId("");
     setServiceTypeId("");
     setFile("");
+    setStatus("");
     setServiceGroupId([]);
   };
 
   const postData = async (e) => {
     e.preventDefault();
 
-    const arr = [];
+    const arr1 = [];
     for (let i = 0; i < serviceGroupId.length; i++) {
-      arr.push(serviceGroupId[i].value);
+      arr1.push(serviceGroupId[i].value);
+    }
+
+    const arr2 = [];
+    for (let i = 0; i < serviceId.length; i++) {
+      arr2.push(serviceId[i].value);
+      setAddServiceByLocation((prev) => [...prev, serviceId[i].value]);
+    }
+
+    const arr3 = [];
+    for (let i = 0; i < addOnServicesId.length; i++) {
+      arr3.push(addOnServicesId[i].value);
     }
 
     const descriptionString = Array.isArray(description)
@@ -73,24 +116,37 @@ const AddService = () => {
     formData.append("categoryId", childCategoryId);
     formData.append("title", title);
     formData.append("description", descriptionString);
-
-    formData.append("serviceTypesId", serviceTypeId);
+    formData.append("type", "Package");
+    formData.append("packageType", serviceTypeId);
     formData.append("status", status);
     formData.append("timeInMin", time);
 
-    //subCategoryIdArray
-    arr.forEach((item) => {
+    arr1.forEach((item) => {
       formData.append(`subCategoryId`, item);
+    });
+
+    arr2.forEach((item) => {
+      formData.append(`services`, item);
+    });
+
+    arr3.forEach((item) => {
+      formData.append(`addOnServices`, item);
     });
 
     Array.from(file).forEach((img) => {
       formData.append("image", img);
     });
-    //edit services
+
+    const solve = {
+      mainCategoryId: parentCategoryId,
+      categoryId: childCategoryId,
+      subCategoryId: arr1,
+    };
+
     try {
       const response = await axios.put(
-        `${Baseurl}api/v1/admin/Service/addService`,
-        formData,
+        `${Baseurl}/api/v1/admin/Package/update/${id}`,
+        solve,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userid")}`,
@@ -99,9 +155,8 @@ const AddService = () => {
       );
       const data = response?.data?.data;
       setShowLocation(data?._id);
-
       initial_value();
-      toast("services is create successful", {
+      toast("Package is create successful", {
         position: "top-right",
       });
     } catch (error) {
@@ -114,25 +169,47 @@ const AddService = () => {
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [data4, setData4] = useState([]);
+  const [servicesArray, setServicesArray] = useState([]);
 
-  //parent category
-  const Baseurl =
-    "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
-
-  //get service
-  const getService = async () => {
+  const getPackageData = async () => {
     try {
-      const response = await axios.get(`${Baseurl}api/v1/admin/Service/${id}`, {
+      const response = await axios.get(`${Baseurl}api/v1/admin/Package/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access")}`,
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access"))}`,
         },
       });
       const data = response.data.data;
-      setData1(data);
-      setSubCategoryIdArray(data?.subCategoryId);
+      setPackageDataArray(data);
+      setShowLocationArray(data?.location);
+    } catch (error) {
+      console.log("package data error", error.data);
+    }
+  };
+
+  const getServices = async () => {
+    try {
+      const response = await axios.get(
+        `${Baseurl}api/v1/admin/Service/${parentCategoryId}/${childCategoryId}/${serviceSingleGroupId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("access")
+            )}`,
+          },
+        }
+      );
+      const data = response.data.data;
+      setServicesArray(data);
     } catch (error) {}
   };
 
+  useEffect(() => {
+    if (parentCategoryId && childCategoryId && serviceSingleGroupId) {
+      getServices();
+    }
+  }, [serviceSingleGroupId]);
+
+  //parent category
   const getData1 = async () => {
     try {
       const response = await axios.get(
@@ -145,8 +222,11 @@ const AddService = () => {
       );
       const data = response.data.data;
       setData1(data);
-      setData2([]);
-      setData3([]);
+      //   setData2([]);
+      //   setData3([]);
+      //   setData4([]);
+      setServiceGroupId([]);
+      console.log("parent data", data);
     } catch (error) {
       setData1([]);
     }
@@ -168,9 +248,11 @@ const AddService = () => {
         }
       );
       const data = response.data.data;
-
+      console.log(data, "child data");
       setData2(data);
-      setData3([]);
+      //   setData3([]);
+      //   setData4([]);
+      setServiceGroupId([]);
     } catch {
       setData2([]);
     }
@@ -193,10 +275,13 @@ const AddService = () => {
         }
       );
       const data = response.data.data;
-
+      console.log(data, "service group data");
       setData3(data);
+      //   setData4([]);
     } catch {
       setData3([]);
+
+      console.log("Setting");
     }
   };
 
@@ -213,37 +298,41 @@ const AddService = () => {
         },
       });
       const data = response.data.data;
-
+      console.log(data, "service type");
       setData4(data);
     } catch {}
   };
 
   useEffect(() => {
     getData4();
+    getPackageData();
   }, []);
 
+  // get service Group
   const handleChange = (selectedOptions) => {
     setServiceGroupId(selectedOptions);
+    setServiceSingleGroupId(selectedOptions?.[0]?.value);
+  };
+
+  //set services
+  const handleChangeServices = (selectedOptions) => {
+    setServiceId(selectedOptions);
+  };
+
+  //set add on services
+  const handleChangeAddOnServices = (selectedOptions) => {
+    setAddOnServicesId(selectedOptions);
   };
 
   const customStyles = {
     control: (provided) => ({
       ...provided,
-      height: "10px",
-      display: "flex",
-      alignItems: "center",
+
       alignContent: "center",
-    }),
-    option: (provided) => ({
-      ...provided,
-      textAlign: "center",
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      textAlign: "center",
     }),
   };
 
+  //handle Edit Location
   //handle edit location
   const handleEdit = (item) => {
     setShowLocation(id);
@@ -255,28 +344,24 @@ const AddService = () => {
     setCityId(item?.city?._id);
     setAreaId(item?.sector?._id);
   };
-
-  // //delete Location
-  // const handleDelete = () => {};
-
   return (
     <>
       <Navbar />
       <div className="pc1">
         <div className="pc2">
-          <p className="add_service_title">Service New</p>
-          <button onClick={() => navigate("/services")} id="service_button">
-            New Service
+          <p className="add_service_title">Edit Package </p>
+          <button onClick={() => navigate("/packages")} id="service_button">
+            All Package
           </button>
         </div>
         <div className="pc3">
-          <h4 className="addServiceh4">Service Details </h4>
+          <h4 className="addServiceh4">Package Details </h4>
           <hr />
           <div className="addServiceform">
             <form onSubmit={postData}>
               <div className="addService1">
                 <div className="addService2">
-                  <label>Service Title</label>
+                  <label>Package Title</label>
                   <input
                     type="text"
                     alt=""
@@ -288,7 +373,7 @@ const AddService = () => {
                 </div>
 
                 <div className="addService2">
-                  <label>Service Timing</label>
+                  <label>Package Timing</label>
                   <input
                     type="text"
                     alt=""
@@ -340,26 +425,25 @@ const AddService = () => {
                     }
                     placeholder="Select option"
                     isMulti
+                    value={serviceGroupId}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="addService2 responsive_service_data">
-                  <label>Service Type</label>
+                  <label>Package Type</label>
                   <select
                     className="service_input_style"
                     onChange={(e) => setServiceTypeId(e.target.value)}
                   >
                     <option>Select Service Type</option>
-                    {data4.length > 0 &&
-                      data4 &&
-                      data4.map((item) => (
-                        <option value={item._id}>{item.name}</option>
-                      ))}
+                    <option value="Normal">Normal</option>
+                    <option value="Customize">Customize</option>
+                    <option value="Edit">Edit</option>
                   </select>
                 </div>
                 <div className="addService2">
                   <Form.Group className="mb-3">
-                    <Form.Label>Service Image</Form.Label>
+                    <Form.Label>Package Image</Form.Label>
                     <Form.Control
                       onChange={(e) => setFile(e.target.files)}
                       type="file"
@@ -370,18 +454,46 @@ const AddService = () => {
                 </div>
                 <div className="addService2">
                   <label>Status</label>
-                  <Form.Control
-                    as="select"
-                    defaultValue={status ? "Publish" : "Unpublish"}
-                    onChange={(e) => setStatus(e.target.value)}
-                  >
-                    <option value={status ? true : false}>
-                      {status ? "Publish" : "Unpublish"}
-                    </option>
-                    <option value={status ? false : true}>
-                      {status ? "Unpublish" : "Publish"}
-                    </option>
-                  </Form.Control>
+                  <select onChange={(e) => setStatus(e.target.value)}>
+                    <option>Select Status</option>
+                    <option value={true}>Publish</option>
+                    <option value={false}>Unpublish</option>
+                  </select>
+                </div>
+                <div className="addService2">
+                  <label>Select Services</label>
+                  <Select
+                    styles={customStyles}
+                    options={
+                      Array.isArray(servicesArray) && servicesArray.length > 0
+                        ? servicesArray.map((option) => ({
+                            value: option._id,
+                            label: option.title,
+                          }))
+                        : []
+                    }
+                    placeholder="Select option"
+                    isMulti
+                    onChange={handleChangeServices}
+                  />
+                </div>
+                <div className="addService2">
+                  <label>Add-on Services</label>
+                  <Select
+                    styles={customStyles}
+                    options={
+                      Array.isArray(servicesArray) && servicesArray.length > 0
+                        ? servicesArray.map((option) => ({
+                            value: option._id,
+                            label: option.title,
+                            id: option.someId,
+                          }))
+                        : []
+                    }
+                    placeholder="Select option"
+                    isMulti
+                    onChange={handleChangeAddOnServices}
+                  />
                 </div>
               </div>
               <Form.Group style={{ marginTop: "20px" }}>
@@ -396,21 +508,21 @@ const AddService = () => {
               </Form.Group>
               <div className="service_button">
                 <button className="addServiceButton" type="submit">
-                  Create Service
+                  Create package
                 </button>
-                {showLocation && (
+                {/* {showLocation && (
                   <button
                     className="addServiceButton"
                     onClick={() => setShow(true)}
                   >
                     Add Location
                   </button>
-                )}
+                )} */}
               </div>
             </form>
           </div>
         </div>
-        {locationData && locationData?.length > 0 && (
+        {showLocationArray.length > 0 && (
           <div className="ser-Loc_table" style={{ width: "100%" }}>
             <table>
               <thead>
@@ -421,11 +533,10 @@ const AddService = () => {
                   <th className="th3">DiscountActive</th>
                   <th className="th4">OriginalPrice</th>
                   <th className="th4">DiscountPrice</th>
-                  <th className="th4">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {locationData?.map((item, i) => (
+                {showLocationArray?.map((item, i) => (
                   <tr>
                     <td>{i + 1}</td>
                     <td>{item?.city?.name}</td>
@@ -440,12 +551,6 @@ const AddService = () => {
                           onClick={() => handleEdit(item)}
                         ></i>
                       </button>
-                      {/* <button className="deleteBtn">
-                        <i
-                          class="fa-solid fa-trash"
-                          onClick={() => handleDelete(item._id)}
-                        ></i>
-                      </button> */}
                     </td>
                   </tr>
                 ))}
@@ -460,16 +565,17 @@ const AddService = () => {
         setShow={setShow}
         showLocation={showLocation}
         addLocation={addLocation}
+        addServiceByLocation={addServiceByLocation}
         locationId={locationId}
         originalLocation={originalLocation}
         discountLocation={discountLocation}
         discountActive={discountActive}
         cityId={cityId}
         areaId={areaId}
-        getService={getService}
+        getPackageData={getPackageData}
       />
     </>
   );
 };
 
-export default AddService;
+export default EditPackages;

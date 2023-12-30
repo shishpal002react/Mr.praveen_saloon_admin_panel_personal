@@ -38,6 +38,7 @@ function MyVerticallyCenteredModal(props) {
       props.onHide();
     } catch {}
   };
+
   return (
     <Modal
       {...props}
@@ -64,6 +65,8 @@ function MyVerticallyCenteredModal(props) {
 const Package = () => {
   const navigate = useNavigate();
   const [packageData, setPackageData] = useState([]);
+  const [query, setQuery] = useState("");
+  const [productSize, setProductSize] = useState();
 
   //delete data model
   const [deleteDataModel, setDeleteDataModel] = useState(false);
@@ -92,6 +95,54 @@ const Package = () => {
     getData();
   }, []);
 
+  // Pagination
+  const [currentPage2, setCurrentPage2] = useState(1);
+  const [postPerPage2] = useState(10);
+  const lastPostIndex2 = currentPage2 * postPerPage2;
+  const firstPostIndex2 = lastPostIndex2 - postPerPage2;
+
+  let pages2 = [];
+
+  const TotolData = query
+    ? packageData?.filter(
+        (i) =>
+          i?.packageType?.toLowerCase().includes(query?.toLowerCase()) ||
+          i?.title?.toString()?.toLowerCase().includes(query?.toLowerCase())
+      )
+    : packageData;
+
+  useEffect(() => {
+    if (query) {
+      setCurrentPage2(1);
+    }
+  }, [query]);
+
+  //prduct is define
+  let slicedData;
+  if (productSize) {
+    slicedData = TotolData?.slice(firstPostIndex2, productSize);
+  } else {
+    slicedData = TotolData?.slice(firstPostIndex2, lastPostIndex2);
+  }
+
+  for (let i = 1; i <= Math.ceil(TotolData?.length / postPerPage2); i++) {
+    pages2.push(i);
+  }
+
+  function Next() {
+    setProductSize();
+    if (currentPage2 < pages2.length) {
+      setCurrentPage2(currentPage2 + 1);
+    }
+  }
+
+  function Prev() {
+    setProductSize();
+    if (currentPage2 !== 1) {
+      setCurrentPage2(currentPage2 - 1);
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -101,19 +152,24 @@ const Package = () => {
           <button onClick={() => navigate("/add-package")}>New Package</button>
         </div>
         <div className="pc3">
-          <div className="pc4">
+          <div className="pc10">
             <div className="pc5">
               <h6>Show</h6>
-              <select>
+              <select onClick={(e) => setProductSize(e.target.value)}>
                 <option value="10">10</option>
-                <option value="10">25</option>
-                <option value="10">50</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
               </select>
               <h6>entries</h6>
             </div>
             <div className="pc6">
               <h6>Search : </h6>
-              <input type="text" placeholder="Search here...." />
+              <input
+                type="text"
+                placeholder="Search here...."
+                onChange={(e) => setQuery(e.target.value)}
+              />
             </div>
           </div>
           <div className="pc7">
@@ -137,8 +193,8 @@ const Package = () => {
                 </tr>
               </thead>
               <tbody>
-                {packageData &&
-                  packageData?.map((item, i) => (
+                {slicedData &&
+                  slicedData?.map((item, i) => (
                     <>
                       <tr className="odd">
                         <td className="p-2">
@@ -215,7 +271,12 @@ const Package = () => {
                         </td>
                         <td className="p-2">
                           <button className="editBtn">
-                            <i class="fa fa-edit"></i>
+                            <i
+                              class="fa fa-edit"
+                              onClick={() =>
+                                navigate(`/packages/edit/${item?._id}`)
+                              }
+                            ></i>
                           </button>
                           <button className="deleteBtn2">
                             <i
@@ -366,14 +427,22 @@ const Package = () => {
               </tbody>
             </table>
             <div className="pc8">
-              <h6>Showing 1 to 9 of 9 entries</h6>
+              <h6>
+                Showing 1 to{" "}
+                {productSize
+                  ? slicedData.length
+                  : lastPostIndex2 - firstPostIndex2}{" "}
+                of {packageData.length} entries
+              </h6>
               <ul className="pc9">
-                <li>Previous</li>
-                <li className="pagiBtn">1</li>
-                <li className="pagiBtn">2</li>
-                <li className="pagiBtn">3</li>
-                <li className="pagiBtn">4</li>
-                <li>Next</li>
+                <button onClick={() => Prev()} className="myButton ">
+                  <li>Previous</li>
+                </button>
+
+                <li className="pagiBtn">{currentPage2}</li>
+                <button onClick={() => Next()} className="nextBtn myButton ">
+                  <li>Next</li>
+                </button>
               </ul>
             </div>
           </div>

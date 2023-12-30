@@ -446,6 +446,16 @@ hr {
   margin-left: 2%;
   width: 96%;
   display: flex;
+  border: 1px solid rgb(199, 187, 187);
+  justify-content: space-between;
+}
+
+.pc10 {
+  padding-top: 10px;
+  margin-left: 2%;
+  width: 96%;
+  display: flex;
+  /* border: 1px solid rgb(199, 187, 187); */
   justify-content: space-between;
 }
 
@@ -664,12 +674,12 @@ tbody {
 /* ============ slot styling ============*/
 
 .slot1 {
-  padding-top: 20px;
-  margin-left: 2%;
-  width: 96%;
-  display: flex;
-  gap: 20px;
-  padding-bottom: 20px;
+  /* padding-top: 20px; */
+  /* margin-left: 2%; */
+  /* width: 96%; */
+  /* display: flex; */
+  /* gap: 20px; */
+  /* padding-bottom: 20px; */
 }
 
 .slot1 select {
@@ -1109,5 +1119,15 @@ select {
 .slot1_grid_flex {
   display: flex;
   align-items: center;
-  justify-content: left;
+  margin: 5px;
+  gap: 10px;
+  /* justify-content: left; */
+}
+
+.slot_button {
+  border: 1px solid rgb(220, 212, 212);
+  /* height: 10px; */
+  border-radius: 5px;
+  height: 30px;
+  align-content: center;
 }

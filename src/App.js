@@ -28,6 +28,8 @@ import CreateJob from "./Components/Job/CreateJob";
 import AddCoupon from "./Components/Coupon/AddCoupon";
 import EditServices from "./Components/Servicess/EditServices";
 import StaticBanner from "./Components/StaticBanner/StaticBanner";
+import EditSlot from "./Components/Slot/EditSlot";
+import EditPackages from "./Components/Package/EditPackages";
 
 function App() {
   return (
@@ -51,8 +53,10 @@ function App() {
         <Route path="/offer-section" element={<OfferSection />} />
         <Route path="/static-banner" element={<StaticBanner />} />
         <Route path="/slots" element={<Slot />} />
+        <Route path="/slots/editSlot/:id" element={<EditSlot />} />
         <Route path="/service-provider" element={<ServiceProvider />} />
         <Route path="/packages" element={<Package />} />
+        <Route path="/packages/edit/:id" element={<EditPackages />} />
         <Route path="/add-services" element={<AddService />} />
         <Route path="/edit-services/:id" element={<EditServices />} />
         <Route path="/add-package" element={<AddPackage />} />

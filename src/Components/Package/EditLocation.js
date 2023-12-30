@@ -6,7 +6,7 @@ import FormData from "form-data";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function AddLocation(props) {
+function EditLocation(props) {
   const [serviceId, setServiceId] = useState("");
   const [cityId, setCityId] = useState("");
   const [areaId, setAreaId] = useState("");
@@ -15,6 +15,7 @@ function AddLocation(props) {
   const [discountActive, setDiscountIsActive] = useState("");
   const [city, setCity] = useState([]);
   const [sector, setSector] = useState([]);
+  const [locationId, setLocationId] = useState("");
 
   //addLocation id
   const [addServiceByLocation, setAddServiceByLocation] = useState([]);
@@ -74,6 +75,12 @@ function AddLocation(props) {
     if (props.show === true) {
       getCity();
       getArea();
+      setCityId(props?.cityId);
+      setAreaId(props?.areaId);
+      setRegularPrice(props.originalLocation);
+      setSalePrice(props.discountLocation);
+      setLocationId(props.locationId);
+      setDiscountIsActive(props.discountActive);
       setServiceId(props?.showLocation);
       setAddServiceByLocation(props?.addServiceByLocation);
       for (let i = 0; i < addServiceByLocation.length; i++) {
@@ -122,19 +129,15 @@ function AddLocation(props) {
     e.preventDefault();
 
     const data = {
-      location: [
-        {
-          city: cityId,
-          sector: areaId,
-          originalPrice: regularPrice,
-          discountActive: discountActive,
-          discountPrice: salePrice,
-        },
-      ],
+      city: cityId,
+      sector: areaId,
+      originalPrice: regularPrice,
+      discountActive: discountActive,
+      discountPrice: salePrice,
     };
     try {
       const response = await axios.put(
-        `${Baseurl}api/v1/admin/package/${serviceId}/add-location`,
+        `${Baseurl}api/v1/admin/package/${serviceId}/update-location/${locationId}`,
         data,
         {
           headers: {
@@ -144,10 +147,10 @@ function AddLocation(props) {
           },
         }
       );
-      console.log(response, "success data is location ");
-      toast.success("Add Location Successful", {
+      toast.success("Edit Location Successful", {
         position: toast.POSITION.TOP_CENTER,
       });
+      props.getPackageData();
       props.addLocation(response?.data?.data?.location);
       props.setShow(false);
     } catch (e) {
@@ -238,4 +241,4 @@ function AddLocation(props) {
   );
 }
 
-export default AddLocation;
+export default EditLocation;

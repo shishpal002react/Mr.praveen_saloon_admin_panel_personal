@@ -15,7 +15,7 @@ function AddServiceGroup(props) {
   const [color, setColor] = useState("");
   const [image, setImage] = useState("");
   const [parentCategoryId, setParentCategoryId] = useState("");
-  const [childCategory, setChildCategory] = useState();
+  const [childCategory, setChildCategory] = useState("");
   const [data1, setData1] = useState([]);
   const [data2, setData2] = useState([]);
 
@@ -92,7 +92,7 @@ function AddServiceGroup(props) {
       formdata.append("description", description);
       formdata.append("colourPicker", color);
 
-      console.log(formdata, "from data golu");
+      console.log(childCategory, "childCategory data ");
 
       const response = await axios.post(
         "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/api/v1/admin/SubCategory/createCategory",
@@ -153,6 +153,7 @@ function AddServiceGroup(props) {
                     as="select"
                     onChange={(e) => setChildCategory(e.target.value)}
                   >
+                    <option>Select child Category</option>
                     {data2.length > 0 &&
                       data2.map((item) => (
                         <option value={item._id}>{item.name}</option>

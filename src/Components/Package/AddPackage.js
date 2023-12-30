@@ -16,6 +16,7 @@ const AddPackage = () => {
   const [show, setShow] = useState(false);
   //text driver
   const editor = useRef(null);
+
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
@@ -293,8 +294,8 @@ const AddPackage = () => {
       <div className="pc1">
         <div className="pc2">
           <p className="add_service_title">Package New</p>
-          <button onClick={() => navigate("/services")} id="service_button">
-            New Package
+          <button onClick={() => navigate("/packages")} id="service_button">
+            All Package
           </button>
         </div>
         <div className="pc3">

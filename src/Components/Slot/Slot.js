@@ -4,9 +4,13 @@ import { Container } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Slot = () => {
   const navigate = useNavigate();
+  const [switchValue, setSwitchValue] = useState("");
+  const [id, setId] = useState("");
+  const [mainCategoryId, setMainCategoryId] = useState("");
 
   const [slot, setSlot] = useState([]);
   const Baseurl =
@@ -20,7 +24,7 @@ const Slot = () => {
         },
       });
       const data = response.data.data;
-      console.log(data, "subcategory data");
+
       setSlot(data.reverse());
     } catch {}
   };
@@ -49,18 +53,44 @@ const Slot = () => {
     getSarchData();
   }, []);
 
+  useEffect(() => {
+    const setStatusSlot = async () => {
+      const data = {
+        mainCategory: mainCategoryId,
+        status: switchValue,
+      };
+      try {
+        const response = await axios.put(
+          `${Baseurl}api/v1/admin/slot/${id}`,
+          data,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userid")}`,
+            },
+          }
+        );
+        toast.success("Slot Update  successful", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+        getdata();
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    setStatusSlot();
+  }, [switchValue, id]);
+
   return (
     <>
       <Navbar />
       <div className="pc1">
         <div className="pc2">
-          <h3>Slots</h3>
+          <h5>Slots</h5>
           <button onClick={() => navigate("/add-slot")}>New Slot</button>
         </div>
         <div className="pc3">
           <div className="slot1_grid_flex">
-            {/* className="scrollBar_slot" */}
-            <div className="slot1">
+            <div className="slot_button">
               <select>
                 <option>Select category</option>
                 {parenetCateory.map((item, i) => (
@@ -70,7 +100,9 @@ const Slot = () => {
                 ))}
               </select>
             </div>
-            <input type="date" />
+            <div className="slot_button">
+              <input style={{ padding: "5px" }} type="date" />
+            </div>
           </div>
 
           <hr />
@@ -80,22 +112,27 @@ const Slot = () => {
                 slot.map((item, i) => (
                   <div className="slot3">
                     <div className="slot4">
-                      <h4>
+                      <h6>
                         {item?.timeFrom} - {item?.timeTo}
-                      </h4>
+                      </h6>
                       <button className="editBtn">
-                        <i class="fa fa-edit"></i>
+                        <i
+                          onClick={() =>
+                            navigate(`/slots/editSlot/${item._id}`)
+                          }
+                          class="fa fa-edit"
+                        ></i>
                       </button>
                     </div>
                     <hr />
                     <div className="slot5">
-                      <p>Job Acceptance</p>
+                      <h6>Job Acceptance</h6>
                       <h6>{item?.jobAcceptance}</h6>
                     </div>
                     <hr />
                     <div className="slot7">
                       <div className="slot6">
-                        <p>Job Booked</p>
+                        <h6>Job Booked</h6>
                         <h6>{item?.totalBookedUsers}</h6>
                       </div>
                       <div className="slot8">
@@ -105,13 +142,13 @@ const Slot = () => {
                               type="switch"
                               id="custom-switch"
                               label="ON/OFF"
+                              checked={item?.status}
+                              onChange={() => {
+                                setSwitchValue(!switchValue);
+                                setId(item?._id);
+                                setMainCategoryId(item?.mainCategory);
+                              }}
                             />
-                            {/* <Form.Check
-                          disabled
-                          type="switch"
-                          label="disabled switch"
-                          id="disabled-custom-switch"
-                        /> */}
                           </Form>
                         </Container>
                       </div>
