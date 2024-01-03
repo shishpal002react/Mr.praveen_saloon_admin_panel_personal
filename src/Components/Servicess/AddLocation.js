@@ -133,6 +133,7 @@ function AddLocation(props) {
               </Form.Select>
             </Form.Group>
             <Form.Group style={{ marginTop: "20px" }}>
+              <Form.Label>Area </Form.Label>
               <Form.Select onChange={(e) => setAreaId(e.target.value)}>
                 <option>Open this select menu</option>
                 {sector.map((item, i) => (

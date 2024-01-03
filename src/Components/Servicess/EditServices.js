@@ -11,12 +11,14 @@ import JoditEditor from "jodit-react";
 import { useRef } from "react";
 import Select from "react-select";
 import EditLocation from "./EditLocation";
+import AddLocation from "./AddLocationEdit";
 
-const AddService = () => {
+const EditServices = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   //location model
   const [show, setShow] = useState(false);
+  const [locationAddModel, setAddLocationModel] = useState(false);
   //text driver
   const editor = useRef(null);
   const [description, setDescription] = useState("");
@@ -32,6 +34,7 @@ const AddService = () => {
   const [locationData, setLocationData] = useState([]);
   const [locationId, setLocationId] = useState("");
   const [subCategoryIdArray, setSubCategoryIdArray] = useState([]);
+  const [services, setServices] = useState("");
 
   //location state
   const [originalLocation, setOriginalLocation] = useState("");
@@ -44,6 +47,29 @@ const AddService = () => {
   function addLocation(data) {
     setLocationData(data);
   }
+
+  useEffect(() => {
+    setServiceGroupId([]);
+    subCategoryIdArray?.map((item) => {
+      return setServiceGroupId((prev) => [
+        ...prev,
+        {
+          value: item?._id,
+          label: item?.name,
+        },
+      ]);
+    });
+  }, [subCategoryIdArray]);
+
+  useEffect(() => {
+    setTitle(services?.title);
+    setTime(services?.timeInMin);
+    setParentCategoryId(services?.mainCategoryId?._id);
+    setChildCategoryId(services?.categoryId?._id);
+    setStatus(services?.status);
+    setServiceTypeId(services?.serviceTypes);
+    setDescription(services?.description);
+  }, [services]);
 
   const initial_value = () => {
     setDescription("");
@@ -69,39 +95,51 @@ const AddService = () => {
       : description;
 
     const formData = new FormData();
-    formData.append("mainCategoryId", parentCategoryId);
-    formData.append("categoryId", childCategoryId);
-    formData.append("title", title);
-    formData.append("description", descriptionString);
-
-    formData.append("serviceTypesId", serviceTypeId);
-    formData.append("status", status);
-    formData.append("timeInMin", time);
-
-    //subCategoryIdArray
-    arr.forEach((item) => {
-      formData.append(`subCategoryId`, item);
-    });
 
     Array.from(file).forEach((img) => {
       formData.append("image", img);
     });
+
+    const sendData = {
+      mainCategoryId: parentCategoryId,
+      categoryId: childCategoryId,
+      subCategoryId: arr,
+      name: title,
+      timeInMin: time,
+      description: description,
+      status: status,
+      type: serviceTypeId,
+    };
+
     //edit services
     try {
       const response = await axios.put(
-        `${Baseurl}api/v1/admin/Service/addService`,
-        formData,
+        `${Baseurl}api/v1/admin/Service/update/${id}`,
+        sendData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("userid")}`,
           },
         }
       );
+
+      if (file) {
+        await axios.put(
+          `${Baseurl}api/v1/admin/Service/uploadService/${id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userid")}`,
+            },
+          }
+        );
+      }
+
       const data = response?.data?.data;
       setShowLocation(data?._id);
 
       initial_value();
-      toast("services is create successful", {
+      toast("Edit services successful", {
         position: "top-right",
       });
     } catch (error) {
@@ -124,11 +162,12 @@ const AddService = () => {
     try {
       const response = await axios.get(`${Baseurl}api/v1/admin/Service/${id}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access")}`,
+          Authorization: `Bearer ${JSON.parse(localStorage.getItem("access"))}`,
         },
       });
       const data = response.data.data;
-      setData1(data);
+      setServices(data);
+      setLocationData(data?.location);
       setSubCategoryIdArray(data?.subCategoryId);
     } catch (error) {}
   };
@@ -154,6 +193,7 @@ const AddService = () => {
 
   useEffect(() => {
     getData1();
+    getService();
   }, []);
 
   //child category
@@ -264,9 +304,9 @@ const AddService = () => {
       <Navbar />
       <div className="pc1">
         <div className="pc2">
-          <p className="add_service_title">Service New</p>
+          <p className="add_service_title">Edit Service</p>
           <button onClick={() => navigate("/services")} id="service_button">
-            New Service
+            All Service
           </button>
         </div>
         <div className="pc3">
@@ -340,6 +380,7 @@ const AddService = () => {
                     }
                     placeholder="Select option"
                     isMulti
+                    value={serviceGroupId}
                     onChange={handleChange}
                   />
                 </div>
@@ -396,16 +437,16 @@ const AddService = () => {
               </Form.Group>
               <div className="service_button">
                 <button className="addServiceButton" type="submit">
-                  Create Service
+                  Edit Service
                 </button>
-                {showLocation && (
-                  <button
-                    className="addServiceButton"
-                    onClick={() => setShow(true)}
-                  >
-                    Add Location
-                  </button>
-                )}
+
+                <button
+                  className="addServiceButton"
+                  type="button"
+                  onClick={() => setAddLocationModel(true)}
+                >
+                  Add Location
+                </button>
               </div>
             </form>
           </div>
@@ -454,6 +495,14 @@ const AddService = () => {
           </div>
         )}
       </div>
+      <AddLocation
+        show={locationAddModel}
+        onHide={() => setAddLocationModel(false)}
+        setAddLocationModel={setAddLocationModel}
+        showLocation={id}
+        getService={getService}
+      />
+
       <EditLocation
         show={show}
         onHide={() => setShow(false)}
@@ -472,4 +521,4 @@ const AddService = () => {
   );
 };
 
-export default AddService;
+export default EditServices;

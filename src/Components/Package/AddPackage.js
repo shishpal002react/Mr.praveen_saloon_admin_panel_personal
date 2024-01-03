@@ -31,6 +31,7 @@ const AddPackage = () => {
   const [locationData, setLocationData] = useState([]);
   const [serviceId, setServiceId] = useState([]);
   const [addOnServicesId, setAddOnServicesId] = useState([]);
+  const [countState, setCountState] = useState(false);
 
   //addLocation id
   const [addServiceByLocation, setAddServiceByLocation] = useState([]);
@@ -382,7 +383,14 @@ const AddPackage = () => {
                   <select
                     className="service_input_style"
                     required
-                    onChange={(e) => setServiceTypeId(e.target.value)}
+                    onChange={(e) => {
+                      setServiceTypeId(e.target.value);
+                      // if (e.target.value === "Customize") {
+                      //   setCountState(true);
+                      // } else {
+                      //   setCountState(false);
+                      // }
+                    }}
                   >
                     <option>Select Service Type</option>
                     <option value="Normal">Normal</option>
@@ -433,25 +441,40 @@ const AddPackage = () => {
                     onChange={handleChangeServices}
                   />
                 </div>
-                <div className="addService2">
-                  <label>Add-on Services</label>
-                  <Select
-                    styles={customStyles}
-                    options={
-                      Array.isArray(servicesArray) && servicesArray.length > 0
-                        ? servicesArray.map((option) => ({
-                            value: option._id,
-                            label: option.title,
-                            id: option.someId,
-                          }))
-                        : []
-                    }
-                    placeholder="Select option"
-                    isMulti
-                    required
-                    onChange={handleChangeAddOnServices}
-                  />
-                </div>
+                {countState ? (
+                  <div className="addService2">
+                    <label>service Count</label>
+                    <input
+                      type="text"
+                      alt=""
+                      required
+                      placeholder="Service Title"
+                      value={title}
+                      className="service_input_style"
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div className="addService2">
+                    <label>Add-on Services</label>
+                    <Select
+                      styles={customStyles}
+                      options={
+                        Array.isArray(servicesArray) && servicesArray.length > 0
+                          ? servicesArray.map((option) => ({
+                              value: option._id,
+                              label: option.title,
+                              id: option.someId,
+                            }))
+                          : []
+                      }
+                      placeholder="Select option"
+                      isMulti
+                      required
+                      onChange={handleChangeAddOnServices}
+                    />
+                  </div>
+                )}
               </div>
               <Form.Group style={{ marginTop: "20px" }}>
                 <Form.Label>Group Description</Form.Label>

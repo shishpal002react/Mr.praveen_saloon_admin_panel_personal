@@ -6,9 +6,8 @@ import FormData from "form-data";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function EditLocation(props) {
+function AddLocation(props) {
   const [serviceId, setServiceId] = useState("");
-  const [locationId, setLocationId] = useState("");
   const [cityId, setCityId] = useState("");
   const [areaId, setAreaId] = useState("");
   const [regularPrice, setRegularPrice] = useState("");
@@ -67,12 +66,6 @@ function EditLocation(props) {
       getCity();
       getArea();
       setServiceId(props?.showLocation);
-      setLocationId(props?.locationId);
-      setRegularPrice(props?.originalLocation);
-      setSalePrice(props?.discountLocation);
-      setAreaId(props?.areaId);
-      setCityId(props?.cityId);
-      setDiscountIsActive(props?.discountActive);
     }
   }, [props]);
 
@@ -80,15 +73,19 @@ function EditLocation(props) {
     e.preventDefault();
 
     const data = {
-      city: cityId,
-      sector: areaId,
-      originalPrice: regularPrice,
-      discountActive: discountActive,
-      discountPrice: salePrice,
+      location: [
+        {
+          city: cityId,
+          sector: areaId,
+          originalPrice: regularPrice,
+          discountActive: discountActive,
+          discountPrice: salePrice,
+        },
+      ],
     };
     try {
       const response = await axios.put(
-        `${Baseurl}api/v1/admin/services/${serviceId}/update-location/${locationId}`,
+        `${Baseurl}api/v1/admin/services/${serviceId}/add-location`,
         data,
         {
           headers: {
@@ -99,12 +96,11 @@ function EditLocation(props) {
         }
       );
 
-      toast.success("Edit Location Successful", {
+      toast.success("Add Location Successful", {
         position: toast.POSITION.TOP_CENTER,
       });
-      props.addLocation(response?.data?.data?.location);
       props.getService();
-      props.setShow(false);
+      props.setAddLocationModel(false);
     } catch (e) {
       toast.success(e?.response?.data?.message, {
         position: toast.POSITION.TOP_CENTER,
@@ -122,7 +118,7 @@ function EditLocation(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Edit Location
+            Add Location
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -162,7 +158,6 @@ function EditLocation(props) {
               <Form.Label>Regular Price</Form.Label>
               <Form.Control
                 type="number"
-                value={regularPrice}
                 onChange={(e) => setRegularPrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -173,7 +168,6 @@ function EditLocation(props) {
               <Form.Label>Sales Price</Form.Label>
               <Form.Control
                 type="number"
-                value={salePrice}
                 onChange={(e) => setSalePrice(e.target.value)}
               ></Form.Control>
             </Form.Group>
@@ -194,4 +188,4 @@ function EditLocation(props) {
   );
 }
 
-export default EditLocation;
+export default AddLocation;

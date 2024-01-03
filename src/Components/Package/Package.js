@@ -52,7 +52,7 @@ function MyVerticallyCenteredModal(props) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h6>Confirm Deleting the Service Group</h6>
+        <p>Confirm Deleting the Service Group</p>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={props.onHide}>Close</Button>
@@ -291,139 +291,6 @@ const Package = () => {
                       </tr>
                     </>
                   ))}
-
-                {/* <tr>
-                  <td>2</td>
-                  <td>
-                    <img
-                      src="https://www.experts4u.in/admin/uploads/1678600562.webp"
-                      className="childImg"
-                    />
-                  </td>
-                  <td>
-                    <spam className="serviceProImg" style={{ width: "200%" }}>
-                      Fix
-                    </spam>
-                  </td>
-                  <td>Salon Deal</td>
-                  <td> Deal Salon at Home</td>
-                  <td>Summer Special Package</td>
-                  <td>
-                    <div className="package1">
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1689835036.webp"
-                          className="packImg"
-                        />
-                        <p>Power Mask O3+</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664875002.webp"
-                          className="packImg"
-                        />
-                        <p>Full Arms, Half Legs, & Under Arms</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664730407.webp"
-                          className="packImg"
-                        />
-                        <p>Eyebrows & Underlips</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664730407.webp"
-                          className="packImg"
-                        />
-                        <p>Eyebrows & Underlips</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td></td>
-
-                  <td>80</td>
-                  <td>
-                    <span className="badge badge-primary">Publish</span>
-                  </td>
-                  <td>
-                    <button className="editBtn">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button className="deleteBtn2">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </td>
-                </tr> */}
-                {/* <tr className="odd">
-                  <td>3</td>
-                  <td>
-                    <img
-                      src="https://www.experts4u.in/admin/uploads/1678600562.webp"
-                      className="childImg"
-                    />
-                  </td>
-                  <td>
-                    <spam className="serviceProImg" style={{ width: "200%" }}>
-                      Fix
-                    </spam>
-                  </td>
-                  <td>Salon Deal</td>
-                  <td> Deal Salon at Home</td>
-                  <td>Summer Special Package</td>
-                  <td>
-                    <div className="package1">
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1689835036.webp"
-                          className="packImg"
-                        />
-                        <p>Power Mask O3+</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664875002.webp"
-                          className="packImg"
-                        />
-                        <p>Full Arms, Half Legs, & Under Arms</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664730407.webp"
-                          className="packImg"
-                        />
-                        <p>Eyebrows & Underlips</p>
-                      </div>
-                      <hr />
-                      <div className="package2">
-                        <img
-                          src="https://www.experts4u.in/admin/uploads/1664730407.webp"
-                          className="packImg"
-                        />
-                        <p>Eyebrows & Underlips</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td></td>
-
-                  <td>80</td>
-                  <td>
-                    <span className="badge badge-primary">Publish</span>
-                  </td>
-                  <td>
-                    <button className="editBtn">
-                      <i class="fa fa-edit"></i>
-                    </button>
-                    <button className="deleteBtn2">
-                      <i class="fa-solid fa-trash"></i>
-                    </button>
-                  </td>
-                </tr> */}
               </tbody>
             </table>
             <div className="pc8">

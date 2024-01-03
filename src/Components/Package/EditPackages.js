@@ -59,8 +59,8 @@ const EditPackages = () => {
   }, [packageDataArray]);
 
   useEffect(() => {
+    setServiceGroupId([]);
     serviceSingleGroupArray?.map((item) => {
-      console.log(item, "value");
       return setServiceGroupId((prev) => [
         ...prev,
         {
@@ -71,7 +71,6 @@ const EditPackages = () => {
     });
   }, [serviceSingleGroupArray]);
 
-  //update location data setServiceGroupId
   function addLocation(data) {
     setLocationData(data);
   }
@@ -112,26 +111,6 @@ const EditPackages = () => {
       : description;
 
     const formData = new FormData();
-    formData.append("mainCategoryId", parentCategoryId);
-    formData.append("categoryId", childCategoryId);
-    formData.append("title", title);
-    formData.append("description", descriptionString);
-    formData.append("type", "Package");
-    formData.append("packageType", serviceTypeId);
-    formData.append("status", status);
-    formData.append("timeInMin", time);
-
-    arr1.forEach((item) => {
-      formData.append(`subCategoryId`, item);
-    });
-
-    arr2.forEach((item) => {
-      formData.append(`services`, item);
-    });
-
-    arr3.forEach((item) => {
-      formData.append(`addOnServices`, item);
-    });
 
     Array.from(file).forEach((img) => {
       formData.append("image", img);
@@ -153,10 +132,23 @@ const EditPackages = () => {
           },
         }
       );
+
+      if (file) {
+        await axios.put(
+          `${Baseurl}/api/v1/admin/Package/uploadService/${id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("userid")}`,
+            },
+          }
+        );
+      }
+
       const data = response?.data?.data;
       setShowLocation(data?._id);
       initial_value();
-      toast("Package is create successful", {
+      toast("Package is Edit successful", {
         position: "top-right",
       });
     } catch (error) {
@@ -180,6 +172,7 @@ const EditPackages = () => {
       });
       const data = response.data.data;
       setPackageDataArray(data);
+      console.log(data, "services data");
       setShowLocationArray(data?.location);
     } catch (error) {
       console.log("package data error", error.data);
