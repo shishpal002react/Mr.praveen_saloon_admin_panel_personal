@@ -31,6 +31,8 @@ const AddPackage = () => {
   const [locationData, setLocationData] = useState([]);
   const [serviceId, setServiceId] = useState([]);
   const [addOnServicesId, setAddOnServicesId] = useState([]);
+  //count state
+  const [selectedCountValue, setSelectedCountValue] = useState("");
   const [countState, setCountState] = useState(false);
 
   //addLocation id
@@ -97,9 +99,13 @@ const AddPackage = () => {
       formData.append(`services`, item);
     });
 
-    arr3.forEach((item) => {
-      formData.append(`addOnServices`, item);
-    });
+    if (countState) {
+      formData.append("selectedCount", selectedCountValue);
+    } else {
+      arr3.forEach((item) => {
+        formData.append(`addOnServices`, item);
+      });
+    }
 
     Array.from(file).forEach((img) => {
       formData.append("image", img);
@@ -147,7 +153,6 @@ const AddPackage = () => {
       );
       const data = response.data.data;
       setServicesArray(data);
-      console.log("services data", servicesArray);
     } catch (error) {}
   };
 
@@ -385,11 +390,11 @@ const AddPackage = () => {
                     required
                     onChange={(e) => {
                       setServiceTypeId(e.target.value);
-                      // if (e.target.value === "Customize") {
-                      //   setCountState(true);
-                      // } else {
-                      //   setCountState(false);
-                      // }
+                      if (e.target.value === "Customize") {
+                        setCountState(true);
+                      } else {
+                        setCountState(false);
+                      }
                     }}
                   >
                     <option>Select Service Type</option>
@@ -448,10 +453,10 @@ const AddPackage = () => {
                       type="text"
                       alt=""
                       required
-                      placeholder="Service Title"
-                      value={title}
+                      placeholder="Service count"
+                      value={selectedCountValue}
                       className="service_input_style"
-                      onChange={(e) => setTitle(e.target.value)}
+                      onChange={(e) => setSelectedCountValue(e.target.value)}
                     />
                   </div>
                 ) : (
