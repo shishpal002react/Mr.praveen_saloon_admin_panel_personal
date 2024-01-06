@@ -9,12 +9,15 @@ import JoditEditor from "jodit-react";
 import { useRef } from "react";
 import Select from "react-select";
 import EditLocation from "./EditLocation";
+import AddLocation from "./AddLocationEditPackage";
 
 const EditPackages = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   //location model
   const [show, setShow] = useState(false);
+  //add location
+  const [addShowLocation, setAddShowAddLocation] = useState(false);
   //text driver
   const editor = useRef(null);
 
@@ -37,7 +40,7 @@ const EditPackages = () => {
   //addLocation id
   const [addServiceByLocation, setAddServiceByLocation] = useState([]);
   const [showLocationArray, setShowLocationArray] = useState([]);
-  const [serviceSingleGroupArray, setServiceSingleGroupArray] = useState([]);
+
   //location state
   const [locationId, setLocationId] = useState("");
   const [originalLocation, setOriginalLocation] = useState("");
@@ -50,26 +53,27 @@ const EditPackages = () => {
     "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
 
   useEffect(() => {
-    setStatus(packageDataArray?.status);
-    setServiceSingleGroupArray(packageDataArray?.subCategoryId);
-    setTitle(packageDataArray?.title);
-    setTime(packageDataArray?.timeInMin);
-    setParentCategoryId(packageDataArray?.mainCategoryId?._id);
-    setChildCategoryId(packageDataArray?.categoryId?._id);
-  }, [packageDataArray]);
-
-  useEffect(() => {
-    setServiceGroupId([]);
-    serviceSingleGroupArray?.map((item) => {
-      return setServiceGroupId((prev) => [
+    // setServiceGroupId([]);
+    packageDataArray?.subCategoryId?.map((item) =>
+      setServiceGroupId((prev) => [
         ...prev,
         {
           value: item?._id,
           label: item?.name,
         },
-      ]);
-    });
-  }, [serviceSingleGroupArray]);
+      ])
+    );
+  }, [packageDataArray]);
+
+  useEffect(() => {
+    setStatus(packageDataArray?.status);
+    setTitle(packageDataArray?.title);
+    setTime(packageDataArray?.timeInMin);
+    setParentCategoryId(packageDataArray?.mainCategoryId?._id);
+    setChildCategoryId(packageDataArray?.categoryId?._id);
+    setShowLocation(id);
+    setDescription(packageDataArray?.description);
+  }, [packageDataArray]);
 
   function addLocation(data) {
     setLocationData(data);
@@ -95,20 +99,20 @@ const EditPackages = () => {
       arr1.push(serviceGroupId[i].value);
     }
 
-    const arr2 = [];
-    for (let i = 0; i < serviceId.length; i++) {
-      arr2.push(serviceId[i].value);
-      setAddServiceByLocation((prev) => [...prev, serviceId[i].value]);
-    }
+    // const arr2 = [];
+    // for (let i = 0; i < serviceId.length; i++) {
+    //   arr2.push(serviceId[i].value);
+    //   setAddServiceByLocation((prev) => [...prev, serviceId[i].value]);
+    // }
 
-    const arr3 = [];
-    for (let i = 0; i < addOnServicesId.length; i++) {
-      arr3.push(addOnServicesId[i].value);
-    }
+    // const arr3 = [];
+    // for (let i = 0; i < addOnServicesId.length; i++) {
+    //   arr3.push(addOnServicesId[i].value);
+    // }
 
-    const descriptionString = Array.isArray(description)
-      ? description.join("")
-      : description;
+    // const descriptionString = Array.isArray(description)
+    //   ? description.join("")
+    //   : description;
 
     const formData = new FormData();
 
@@ -117,9 +121,13 @@ const EditPackages = () => {
     });
 
     const solve = {
+      name: title,
       mainCategoryId: parentCategoryId,
       categoryId: childCategoryId,
       subCategoryId: arr1,
+      discountActive: status,
+      description: description,
+      type: serviceTypeId,
     };
 
     try {
@@ -145,9 +153,8 @@ const EditPackages = () => {
         );
       }
 
-      const data = response?.data?.data;
-      setShowLocation(data?._id);
       initial_value();
+      getPackageData();
       toast("Package is Edit successful", {
         position: "top-right",
       });
@@ -172,11 +179,8 @@ const EditPackages = () => {
       });
       const data = response.data.data;
       setPackageDataArray(data);
-      console.log(data, "services data");
       setShowLocationArray(data?.location);
-    } catch (error) {
-      console.log("package data error", error.data);
-    }
+    } catch (error) {}
   };
 
   const getServices = async () => {
@@ -193,7 +197,9 @@ const EditPackages = () => {
       );
       const data = response.data.data;
       setServicesArray(data);
-    } catch (error) {}
+    } catch (error) {
+      setServicesArray([]);
+    }
   };
 
   useEffect(() => {
@@ -218,7 +224,7 @@ const EditPackages = () => {
       //   setData2([]);
       //   setData3([]);
       //   setData4([]);
-      setServiceGroupId([]);
+
       console.log("parent data", data);
     } catch (error) {
       setData1([]);
@@ -245,7 +251,6 @@ const EditPackages = () => {
       setData2(data);
       //   setData3([]);
       //   setData4([]);
-      setServiceGroupId([]);
     } catch {
       setData2([]);
     }
@@ -273,8 +278,6 @@ const EditPackages = () => {
       //   setData4([]);
     } catch {
       setData3([]);
-
-      console.log("Setting");
     }
   };
 
@@ -291,7 +294,6 @@ const EditPackages = () => {
         },
       });
       const data = response.data.data;
-      console.log(data, "service type");
       setData4(data);
     } catch {}
   };
@@ -320,12 +322,11 @@ const EditPackages = () => {
   const customStyles = {
     control: (provided) => ({
       ...provided,
-
+      height: "10px",
       alignContent: "center",
     }),
   };
 
-  //handle Edit Location
   //handle edit location
   const handleEdit = (item) => {
     setShowLocation(id);
@@ -503,14 +504,14 @@ const EditPackages = () => {
                 <button className="addServiceButton" type="submit">
                   Create package
                 </button>
-                {/* {showLocation && (
+                {
                   <button
                     className="addServiceButton"
-                    onClick={() => setShow(true)}
+                    onClick={() => setAddShowAddLocation(true)}
                   >
                     Add Location
                   </button>
-                )} */}
+                }
               </div>
             </form>
           </div>
@@ -566,6 +567,14 @@ const EditPackages = () => {
         cityId={cityId}
         areaId={areaId}
         getPackageData={getPackageData}
+      />
+      <AddLocation
+        show={addShowLocation}
+        onHide={() => setAddShowAddLocation(false)}
+        setAddShowAddLocation={setAddShowAddLocation}
+        showLocation={showLocation}
+        addLocation={addLocation}
+        addServiceByLocation={addServiceByLocation}
       />
     </>
   );

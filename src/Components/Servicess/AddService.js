@@ -232,7 +232,7 @@ const AddService = () => {
         <div className="pc2">
           <p className="add_service_title">Service New</p>
           <button onClick={() => navigate("/services")} id="service_button">
-            New Service
+            All Service
           </button>
         </div>
         <div className="pc3">
