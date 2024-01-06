@@ -505,7 +505,7 @@ const EditPackages = () => {
                 {
                   <button
                     className="addServiceButton"
-                    type="submit"
+                    type="button"
                     onClick={() => setAddShowAddLocation(true)}
                   >
                     Add Location
