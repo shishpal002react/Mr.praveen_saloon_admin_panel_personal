@@ -53,7 +53,7 @@ const EditPackages = () => {
     "https://vg4op6mne2.execute-api.ap-south-1.amazonaws.com/dev/";
 
   useEffect(() => {
-    // setServiceGroupId([]);
+    setServiceGroupId([]);
     packageDataArray?.subCategoryId?.map((item) =>
       setServiceGroupId((prev) => [
         ...prev,
@@ -501,12 +501,11 @@ const EditPackages = () => {
                 />
               </Form.Group>
               <div className="service_button">
-                <button className="addServiceButton" type="submit">
-                  Create package
-                </button>
+                <button className="addServiceButton">Create package</button>
                 {
                   <button
                     className="addServiceButton"
+                    type="submit"
                     onClick={() => setAddShowAddLocation(true)}
                   >
                     Add Location
@@ -539,7 +538,7 @@ const EditPackages = () => {
                     <td>{item?.originalPrice}</td>
                     <td>{item?.discountPrice}</td>
                     <td>
-                      <button className="editBtn">
+                      <button className="editBtn" type="submit">
                         <i
                           class="fa fa-edit"
                           onClick={() => handleEdit(item)}
